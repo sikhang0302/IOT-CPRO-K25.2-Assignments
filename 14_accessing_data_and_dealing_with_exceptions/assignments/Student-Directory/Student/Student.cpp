@@ -55,20 +55,33 @@ namespace StudentSystem
         int age;
         float gpa;
         std::string name = nameStr;
+        bool exceptionFound = false;
+        size_t pos;
 
         try
         {
-            id = std::stoi(idStr);
+            id = std::stoi(idStr, &pos);
+
+            if (pos != idStr.size())
+            {
+                throw std::invalid_argument("");
+            }
         }
         catch (const std::invalid_argument &e)
         {
             std::cerr << "Error: Invalid ID." << std::endl;
-            return;
+            exceptionFound = true;
         }
 
         try
         {
-            age = std::stoi(ageStr);
+            age = std::stoi(ageStr, &pos);
+
+            if (pos != ageStr.size())
+            {
+                throw std::invalid_argument("");
+            }
+
             if (age <= 0)
             {
                 throw std::out_of_range("Age must be greater than 0.");
@@ -77,18 +90,24 @@ namespace StudentSystem
         catch (const std::invalid_argument &e)
         {
             std::cerr << "Error: Invalid age." << std::endl;
-            return;
+            exceptionFound = true;
         }
         catch (const std::out_of_range &e)
         {
             std::cerr << "Error: " << e.what() << std::endl;
-            return;
+            exceptionFound = true;
         }
 
         try
         {
-            gpa = std::stof(gpaStr);
-            if (gpa < 0.0f || gpa >= 10.0f)
+            gpa = std::stof(gpaStr, &pos);
+
+            if (pos != gpaStr.size())
+            {
+                throw std::invalid_argument("");
+            }
+
+            if (gpa < 0.0f || gpa > 10.0f)
             {
                 throw std::out_of_range("GPA is out of valid range (from 0.0 to 10.0).");
             }
@@ -96,11 +115,16 @@ namespace StudentSystem
         catch (const std::invalid_argument &e)
         {
             std::cerr << "Error: Invalid GPA." << std::endl;
-            return;
+            exceptionFound = true;
         }
         catch (const std::out_of_range &e)
         {
             std::cerr << "Error: " << e.what() << std::endl;
+            exceptionFound = true;
+        }
+
+        if (exceptionFound == true)
+        {
             return;
         }
 
@@ -134,7 +158,7 @@ namespace StudentSystem
             {
                 std::cout << "Found a student with name: " << name << std::endl;
                 s.showInfo();
-                std::cout << std::endl;
+                return;
             }
         }
         std::cout << "No student with name: " << name << " found" << std::endl;
@@ -154,9 +178,8 @@ namespace StudentSystem
         for (const auto &s : studentList)
         {
             count++;
-            std::cout << "Student " << count << ":" << std::endl;
+            std::cout << "Number " << count << ":" << std::endl;
             s.showInfo();
-            std::cout << std::endl;
         }
 
         return;
@@ -164,9 +187,12 @@ namespace StudentSystem
 
     bool isIdExisted(const StudentDirectory &studentList, std::string id)
     {
-        if (!(studentList.getStudentList().empty())) {
-            for (const auto& s : studentList.getStudentList()) {
-                if (std::to_string(s.getId()) == id) {
+        if (!(studentList.getStudentList().empty()))
+        {
+            for (const auto &s : studentList.getStudentList())
+            {
+                if (std::to_string(s.getId()) == id)
+                {
                     return true;
                 }
             }
