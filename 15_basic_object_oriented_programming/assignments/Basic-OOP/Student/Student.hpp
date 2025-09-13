@@ -9,25 +9,27 @@ namespace StudentSystem
     class Student
     {
     private:
-        static int id;
+        static int newId;
+        int id;
         std::string name;
         float gpa;
 
-        void setNewId(int id);
-
-    public:
+        
+        public:
         Student();
         Student(std::string name, float gpa);
         ~Student();
-
+        
         int getId(void) const;
         std::string getName(void) const;
         float getGpa(void) const;
-
+        
+        void setNewId(int newCalculatedId);
         void setName(const std::string &name);
         void setGpa(float gpa);
 
         bool operator==(const int studentId);
+        bool operator==(const int studentId) const;
 
         void addStudent(const std::string &name, float gpa);
         void showInfo(void) const;
@@ -48,13 +50,15 @@ namespace StudentSystem
         void setStudentList(std::vector<Student> &studentList);
 
         Student &operator[](size_t index);
-        std::ostream &operator<<(std::ostream &os);
+        const Student &operator[](size_t index) const;
 
-        void addStudentToList();
+        void addStudentToList(const std::string &name, const float gpa);
         bool searchStudentById(const int id) const;
-        void removeStudentById(const int id);
+        bool removeStudentById(const int id);
         void showStudentList(void) const;
-        friend void showStudentListGPA(); // friend function
+
+        friend std::ostream &operator<<(std::ostream &os, const StudentList &studentList);
+        friend void showStudentListTotalGPA(const StudentList &studentList);
     };
 
 } // namespace StudentSystem

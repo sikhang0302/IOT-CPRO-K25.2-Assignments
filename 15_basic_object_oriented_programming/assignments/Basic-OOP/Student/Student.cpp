@@ -1,17 +1,22 @@
 #include "Student.hpp"
 #include <iostream>
+#include <stdexcept>
 
 namespace StudentSystem
 {
-    int Student::id = 0; // Static member ID must be initalized outside of Student class
+    int Student::newId = 0; // Static member ID must be initalized outside of Student class
 
-    Student::Student() { id++; }
+    Student::Student() : id(++newId), name(""), gpa(0.0f) {}
     Student::Student(std::string name, float gpa)
-        : name(name), gpa(gpa) { id++; }
+        : id(++newId), name(name), gpa(gpa) {}
 
     Student::~Student() {}
 
-    void Student::setNewId(int id) { Student::id = id; }
+    void Student::setNewId(int newCalculatedId)
+    {
+        id = newCalculatedId;
+        newId--;
+    }
 
     int Student::getId(void) const { return id; }
     std::string Student::getName(void) const { return name; }
@@ -21,6 +26,15 @@ namespace StudentSystem
     void Student::setGpa(float gpa) { this->gpa = gpa; }
 
     bool Student::operator==(const int studentId)
+    {
+        if (this->id == studentId)
+        {
+            return true;
+        }
+        return false;
+    }
+
+    bool Student::operator==(const int studentId) const
     {
         if (this->id == studentId)
         {
@@ -42,7 +56,6 @@ namespace StudentSystem
         std::cout << "Student GPA: " << gpa << "\n";
     }
 
-    // STUDENT LIST
     StudentList::StudentList() {}
     StudentList::StudentList(const std::vector<Student> &studentList)
         : studentList(studentList) {}
@@ -63,10 +76,15 @@ namespace StudentSystem
         return studentList[index];
     }
 
-    std::ostream &StudentList::operator<<(std::ostream &os)
+    const Student &StudentList::operator[](size_t index) const
+    {
+        return studentList[index];
+    }
+
+    std::ostream &operator<<(std::ostream &os, const StudentList &studentList)
     {
         int count = 0;
-        for (auto s : this->getStudentList())
+        for (auto s : studentList.getStudentList())
         {
             count++;
             os << "Student " << count << "\n"
@@ -77,24 +95,45 @@ namespace StudentSystem
         return os;
     }
 
+    void StudentList::addStudentToList(const std::string &name, const float gpa)
+    {
+        Student tempStudent;
+        tempStudent.addStudent(name, gpa);
+        bool isPushBack = true;
+
+        // Check for ID
+        int i;
+        for (i = 0; i < static_cast<int>(studentList.size() - 1); i++)
+        {
+            if (((*this)[i].getId() + 1) != (*this)[i + 1].getId())
+            {
+                int id = (*this)[i].getId() + 1;
+                tempStudent.setNewId(id);
+                studentList.insert(studentList.begin() + (i + 1), tempStudent);
+                isPushBack = false;
+                break;
+            }
+        }
+
+        if (isPushBack)
+        {
+            studentList.push_back(tempStudent);
+        }
+        std::cout << "Successfully added a Student to the list.\n";
+    }
+
     bool StudentList::searchStudentById(const int id) const
     {
-        if (this->getStudentList().empty())
+        if (studentList.empty())
         {
             std::cout << "List is currently empty!\n";
         }
         else
         {
-            int i = 0;
-            StudentList a;
-            for (i = 0; i < this->getStudentList().size(); i++) {
-                if (a[i] == id) {
-
-                }
-            }
-            for (auto s : this->getStudentList())
+            size_t i = 0;
+            for (i = 0; i < studentList.size(); i++)
             {
-                if (s == id)
+                if ((*this)[i] == id)
                 {
                     return true;
                 }
@@ -103,10 +142,61 @@ namespace StudentSystem
         return false;
     }
 
-    void StudentList::removeStudentById(const int id)
+    bool StudentList::removeStudentById(const int id)
     {
+        if (studentList.empty())
+        {
+            std::cout << "List is currently empty!\n";
+        }
+        else
+        {
+            size_t i = 0;
+            for (i = 0; i < studentList.size(); i++)
+            {
+                if ((*this)[i] == id)
+                {
+                    studentList.erase((studentList.begin()) + i);
+                    return true;
+                }
+            }
+        }
+        return false;
     }
+
     void StudentList::showStudentList(void) const
     {
+        if (studentList.empty())
+        {
+            std::cout << "List is currently empty!\n";
+        }
+        else
+        {
+            std::cout << "Current list of student: " << "\n"
+                      << (*this);
+        }
+    }
+
+    void showStudentListTotalGPA(const StudentList &studentList)
+    {
+        if (studentList.getStudentList().empty())
+        {
+            std::cout << "List is currently empty!\n";
+        }
+        else
+        {
+            std::cout << "Current number of student: "
+                      << studentList.getStudentList().size()
+                      << "\n";
+
+            float totalGpa = 0.0f;
+            size_t i;
+            for (i = 0; i < studentList.getStudentList().size(); i++)
+            {
+                totalGpa += studentList[i].getGpa();
+            }
+            totalGpa /= studentList.getStudentList().size();
+
+            std::cout << "Total GPA of student in the list: " << totalGpa << "\n";
+        }
     }
 } // namsespace StudentSystem
