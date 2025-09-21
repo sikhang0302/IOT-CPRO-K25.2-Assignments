@@ -33,13 +33,16 @@ namespace BookManager
         void displayAllBooks(void) const;
         Book *searchBook(std::string title) const;
         Book *searchBook(std::string title, int &num_of_books) const;
-        BookRecord *searchRecord(std::string title) const;
+        BookRecord *searchRecord(std::string title);
+        void displayBookRecords(void) const;
         void borrowBook(std::string title);
         void returnBook(std::string title);
-        void processRequest(void);
+        void processRequests(void);
         void showLastTransaction(void) const;
         void showCompletedTransactions(void) const;
+        int searchWaitingList(std::string title) const;
         void showWaitingList(void) const;
+        void showBookRecords(void) const;
 
         ~Library();
     };

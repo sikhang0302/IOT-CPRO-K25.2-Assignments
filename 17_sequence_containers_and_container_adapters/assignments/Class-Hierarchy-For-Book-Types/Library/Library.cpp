@@ -1,5 +1,14 @@
 #include "../Library/Library.hpp"
 #include <iostream>
+#include <algorithm> // Required for std::transform
+#include <cctype>    // Required for ::tolower
+
+static std::string toLower(const std::string &input_str)
+{
+    std::string lower_str = input_str;
+    std::transform(lower_str.begin(), lower_str.end(), lower_str.begin(), ::tolower);
+    return lower_str;
+}
 
 namespace BookManager
 {
@@ -19,7 +28,7 @@ namespace BookManager
         {
             BookRecord tmp_record;
             tmp_record.book = book;
-            (tmp_record.number_of_copies)++;
+            tmp_record.number_of_copies = 1;
             book_records.push_back(tmp_record);
             std::cout << "Successfully added a book record!\n";
         }
@@ -37,7 +46,7 @@ namespace BookManager
             for (const auto &b : library_books)
             {
                 count_books++;
-                std::cout << "- Book " << count_books << " :\n";
+                std::cout << "[Book " << count_books << "]\n";
                 b->displayInfo();
             }
         }
@@ -55,7 +64,7 @@ namespace BookManager
             Book *temp_book = nullptr;
             for (const auto &b : library_books)
             {
-                if (b->getTitle() == title)
+                if (toLower(b->getTitle()) == toLower(title))
                 {
                     count_books++;
                     if (count_books == 1)
@@ -65,7 +74,7 @@ namespace BookManager
                 }
             }
 
-            if (count != 0)
+            if (count_books != 0)
             {
                 std::cout << "Found " << count_books << " in the library.\n";
                 return temp_book;
@@ -79,7 +88,7 @@ namespace BookManager
         return nullptr;
     }
 
-    Book *searchBook(std::string title, int &num_of_books) const
+    Book *Library::searchBook(std::string title, int &num_of_books) const
     {
         if (library_books.empty())
         {
@@ -91,7 +100,7 @@ namespace BookManager
             Book *temp_book = nullptr;
             for (const auto &b : library_books)
             {
-                if (b->getTitle() == title)
+                if (toLower(b->getTitle()) == toLower(title))
                 {
                     num_of_books++;
                     if (num_of_books == 1)
@@ -115,11 +124,11 @@ namespace BookManager
         return nullptr;
     }
 
-    BookRecord *searchRecord(std::string title) const
+    BookRecord *Library::searchRecord(std::string title)
     {
-        for (const auto &r : book_records)
+        for (auto &r : book_records)
         {
-            if (r.book->getTitle() == title)
+            if (toLower(r.book->getTitle()) == toLower(title))
             {
                 return &r;
             }
@@ -132,7 +141,7 @@ namespace BookManager
         if (searchBook(title))
         {
             borrow_requests.push(title);
-            std::cout << "Borrow request for book with title: " << title << "added.\n";
+            std::cout << "Borrow request for book with title: " << title << " added.\n";
         }
     }
 
@@ -141,22 +150,37 @@ namespace BookManager
         int num_of_books;
         if (searchBook(title, num_of_books))
         {
-            BookRecord book_record = searchRecord(title);
-            completed_transactions.push("Returned book: " + title);
-            std::cout << "Book with title: " << title << "returned.\n";
-            if (book_record.number_of_copies < num_of_books)
+            BookRecord *book_record = searchRecord(title);
+            if (book_record->number_of_copies < num_of_books)
             {
-                (book_record.number_of_copies)++;
+                completed_transactions.push("Returned book: " + title);
+                std::cout << "Book with title: " << title << " returned.\n";
+                std::cout << "Copy of book with title: " << title << " returned.\n";
+
+                // Check waiting list
+                int request_index = searchWaitingList(title);
+                if (request_index != -1)
+                {
+                    waiting_list.erase(waiting_list.begin() + request_index);
+                    completed_transactions.push("Borrowed book (from waiting list): " + title);
+                    std::cout << "Book: " << title
+                              << " is immediately borrowed by Request "
+                              << (request_index + 1)
+                              << " in waiting list.\n";
+                }
+                else
+                {
+                    (book_record->number_of_copies)++;
+                }
             }
             else
             {
                 std::cout << "This book is not owned by library.\n";
             }
-            std::cout << "Copy of book with title " << title << "returned.\n";
         }
     }
 
-    void Library::processRequest(void)
+    void Library::processRequests(void)
     {
         if (borrow_requests.empty())
         {
@@ -167,17 +191,22 @@ namespace BookManager
             while (!(borrow_requests.empty()))
             {
                 std::string title = borrow_requests.front();
-                if (book_record.number_of_copies == 0)
+                borrow_requests.pop();
+
+                BookRecord *book_record = searchRecord(title);
+                if (book_record->number_of_copies == 0)
                 {
-                    std::cout << "Book with title " << title
-                              << "is currently busy! Added request to waiting list\n";
+                    std::cout << "Book with title: " << title
+                              << " is currently busy! Added request to waiting list\n";
                     waiting_list.push_back(title);
                 }
-                borrow_requests.pop();
-                BookRecord book_record = searchRecord(title);
-                completed_transactions.push("Borrowed book: " + title);
-                std::cout << "Processed borrow request for book with title: "
-                          << title << "\n";
+                else
+                {
+                    (book_record->number_of_copies)--;
+                    completed_transactions.push("Borrowed book: " + title);
+                    std::cout << "Processed borrow request for book with title: "
+                              << title << "\n";
+                }
             }
         }
     }
@@ -190,7 +219,7 @@ namespace BookManager
         }
         else
         {
-            std::cout < < < "Last completed transaction: " << completed_transactions.top() << "\n";
+            std::cout << "Last completed transaction: " << completed_transactions.top() << "\n";
         }
     }
 
@@ -206,10 +235,24 @@ namespace BookManager
             std::cout << "List of completed transactions:\n";
             while (!(temp_transactions.empty()))
             {
-                std::cout << completed_transactions.top() << "\n";
-                completed_transactions.pop();
+                std::cout << temp_transactions.top() << "\n";
+                temp_transactions.pop();
             }
         }
+    }
+
+    int Library::searchWaitingList(std::string title) const
+    {
+        int index = 0;
+        for (const auto &w : waiting_list)
+        {
+            if (toLower(w) == toLower(title))
+            {
+                return index;
+            }
+            index++;
+        }
+        return -1;
     }
 
     void Library::showWaitingList(void) const
@@ -220,12 +263,40 @@ namespace BookManager
         }
         else
         {
-            std::cout << "List of waiting requests:\n"
-            for (auto w : waiting_list) {
-                std::cout << w << "\n";
+            std::cout << "List of waiting requests:\n";
+            int count_requests = 0;
+            for (const auto &w : waiting_list)
+            {
+                count_requests++;
+                std::cout << "[Request " << count_requests << "]: " << w << "\n";
             }
         }
     }
 
-    ~Library::Library() {}
-}
+    void Library::showBookRecords(void) const
+    {
+        if (book_records.empty())
+        {
+            std::cout << "List of records is currently empty!\n";
+        }
+        else
+        {
+            std::cout << "List of book records:\n";
+            int count_records = 0;
+            for (const auto &r : book_records)
+            {
+                count_records++;
+                std::cout << "[Record " << count_records << "] Title: " << r.book->getTitle()
+                          << " | Number of Copies: " << r.number_of_copies << "\n";
+            }
+        }
+    }
+
+    Library::~Library()
+    {
+        for (const auto &b : library_books)
+        {
+            delete b;
+        }
+    }
+} // namespace BookManager

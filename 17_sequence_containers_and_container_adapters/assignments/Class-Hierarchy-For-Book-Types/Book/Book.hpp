@@ -8,24 +8,24 @@ namespace BookManager
     class Book
     {
     private:
-        std::string title;
-        std::string author;
-        std::string publication_year;
         static int next_book_id;
         int book_id;
+        std::string title;
+        std::string author;
+        int publication_year;
 
     public:
         Book();
-        Book(const std::string &title, const std::string &author, const std::string &publication_year);
+        Book(const std::string &title, const std::string &author, int publication_year);
 
-        virtual id getId(void) const;
+        virtual int getId(void) const;
         virtual std::string getTitle(void) const;
         virtual std::string getAuthor(void) const;
-        virtual std::string getPublicationYear(void) const;
+        virtual int getPublicationYear(void) const;
 
         void setTitle(const std::string &title);
         void setAuthor(const std::string &author);
-        void setPulibcationYear(const std::string &publication_year);
+        void setPulibcationYear(int publication_year);
 
         virtual void displayInfo() const = 0;
 
@@ -38,6 +38,9 @@ namespace BookManager
         std::string genre;
 
     public:
+        FictionBook(const std::string &title, const std::string &author,
+                    int publication_year, const std::string &genre);
+
         std::string getGenre(void) const;
 
         void setGenre(const std::string &genre);
@@ -51,6 +54,9 @@ namespace BookManager
         std::string topic;
 
     public:
+        NonFictionBook(const std::string &title, const std::string &author,
+                       int publication_year, const std::string &topic);
+
         std::string getTopic(void) const;
 
         void setTopic(const std::string &topic);
