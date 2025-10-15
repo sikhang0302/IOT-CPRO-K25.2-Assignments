@@ -1,0 +1,9 @@
+D:/Git-work/QT6/IOT_CPRO_K52_Mock_Prj/build/Desktop_Qt_6_9_2_MinGW_64_bit-Debug/CMakeFiles/IOT_CPRO_K52_Mock_Prj.dir
+D:/Git-work/QT6/IOT_CPRO_K52_Mock_Prj/build/Desktop_Qt_6_9_2_MinGW_64_bit-Debug/CMakeFiles/edit_cache.dir
+D:/Git-work/QT6/IOT_CPRO_K52_Mock_Prj/build/Desktop_Qt_6_9_2_MinGW_64_bit-Debug/CMakeFiles/rebuild_cache.dir
+D:/Git-work/QT6/IOT_CPRO_K52_Mock_Prj/build/Desktop_Qt_6_9_2_MinGW_64_bit-Debug/CMakeFiles/list_install_components.dir
+D:/Git-work/QT6/IOT_CPRO_K52_Mock_Prj/build/Desktop_Qt_6_9_2_MinGW_64_bit-Debug/CMakeFiles/install.dir
+D:/Git-work/QT6/IOT_CPRO_K52_Mock_Prj/build/Desktop_Qt_6_9_2_MinGW_64_bit-Debug/CMakeFiles/install/local.dir
+D:/Git-work/QT6/IOT_CPRO_K52_Mock_Prj/build/Desktop_Qt_6_9_2_MinGW_64_bit-Debug/CMakeFiles/install/strip.dir
+D:/Git-work/QT6/IOT_CPRO_K52_Mock_Prj/build/Desktop_Qt_6_9_2_MinGW_64_bit-Debug/CMakeFiles/IOT_CPRO_K52_Mock_Prj_autogen_timestamp_deps.dir
+D:/Git-work/QT6/IOT_CPRO_K52_Mock_Prj/build/Desktop_Qt_6_9_2_MinGW_64_bit-Debug/CMakeFiles/IOT_CPRO_K52_Mock_Prj_autogen.dir

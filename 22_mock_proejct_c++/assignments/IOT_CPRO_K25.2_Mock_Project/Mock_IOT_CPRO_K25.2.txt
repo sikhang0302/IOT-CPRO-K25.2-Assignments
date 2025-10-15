@@ -1,0 +1,76 @@
+                 ┌─────────────────────────┐
+                 │        Device           │  (Abstract Base Class)
+                 │-------------------------│
+                 │ - name: string          │
+                 │ - id: string            │
+                 │ - location: string      │
+                 │-------------------------│
+                 │ + getName(): string     │
+                 │ + getId(): string       │
+                 │ + getLocation(): string │
+                 │ + getType(): string*    │  (* pure virtual)
+                 └───────────▲────────────┘
+                             │
+     ┌────────────────────────┼────────────────────────┐
+     │                        │                        │
+┌───────────────┐      ┌───────────────┐        ┌───────────────┐
+│TemperatureSensor│    │HumiditySensor │        │  LightSwitch  │
+│----------------│    │----------------│        │----------------│
+│ inherits Device│    │ inherits Device│        │ inherits Device│
+│----------------│    │----------------│        │----------------│
+│+getType()      │    │+getType()      │        │+getType()      │
+└────────────────┘    └────────────────┘        └────────────────┘
+
+
+                       ┌──────────────────────────────┐
+                       │        DeviceFactory         │
+                       │------------------------------│
+                       │ + createDevice(type, name,   │
+                       │   id, location): unique_ptr  │
+                       └──────────────────────────────┘
+                                   │
+                                   │  creates
+                                   ▼
+
+
+                      ┌──────────────────────────────┐
+                      │       DeviceManager (Singleton) │
+                      │--------------------------------│
+                      │ - devices:                     │
+                      │   vector<unique_ptr<Device>>   │
+                      │--------------------------------│
+                      │ + getInstance(): DeviceManager&│
+                      │ + addDevice(Device)            │
+                      │ + removeDevice(id)             │
+                      │ + getDevices(): vector<...>&   │
+                      └──────────────────────────────┘
+
+
+
+
+
+
+
+Yêu cầu:
+    Tạo ra các class để quản lý device được thêm vào bởi người dùng theo yêu cầu sau.
+    
+    Phương thức tạo device và thêm divice. Các phương thức này được sử dụng khi người dùng nhấn nút "Thêm Thiết Bị".
+    Phương thức tạo device cần dựa trên input là "type" để tạo ra object phù hợp với device type
+    Các thiết bị thêm mới có ID trùng với ID của thiết bị đã có sẽ không được tạo
+        Ví dụ:
+                auto device = DeviceFactory::createDevice(name, id, location, type);
+                DeviceManager::getInstance().addDevice(std::move(device))
+
+    Phương thức xóa thiết bị. Được sử dụng khi người dùng nhấn nút "Xóa Thiết Bị".
+    Phương thức này nhận được 1 string là ID của thiết bị. 
+    Phương thức này sẽ xóa object có ID tương ứng khỏi bộ nhớ.
+        Ví dụ:
+            DeviceManager::getInstance().removeDevice(ID);
+
+    Phương thức getDevices. Phương thức này được gọi khi 1 trong 2 nút nhấn Thêm/Xóa thiết bị được nhấn.
+    Phương thức này trả về danh sách các thiết bị đang có.
+    
+        Ví dụ:
+            for (auto& dev : DeviceManager::getInstance().getDevices())
+            {
+            }

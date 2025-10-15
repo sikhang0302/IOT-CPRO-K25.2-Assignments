@@ -1,0 +1,32 @@
+Tiêu chí
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------
+1. Cấp phát / Giải phóng
+Raw Pointer (unsigned char*)
+- Phải new[] và delete[] thủ công
+Smart Pointer (std::unique_ptr<unsigned char[]>)	
+- Tự động giải phóng khi đối tượng bị hủy 
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------
+2. An toàn khi lỗi xảy ra
+Raw Pointer (unsigned char*)	
+- Có thể bị rò rỉ nếu quên delete[] hoặc exception xảy ra
+Smart Pointer (std::unique_ptr<unsigned char[]>)	
+- Không rò rỉ, ngay cả khi exception xảy ra hoặc return sớm do smart pointer tự cleanup
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------
+3. Chuyển quyền sở hữu
+Raw Pointer (unsigned char*)	
+Khó quản lý, dễ gây dangling pointer (nguyên nhân gây double free)
+Smart Pointer (std::unique_ptr<unsigned char[]>)	
+Tự động quản lí, rõ ràng với std::move()
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------
+4. Đơn giản hóa Rule of Five
+Raw Pointer (unsigned char*)	 
+- Cần tự viết destructor, copy/move
+Smart Pointer (std::unique_ptr<unsigned char[]>)		
+- Chỉ cần định nghĩa copy/move là đủ, destructor mặc định hoạt động đúng	
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------
+5. Hiệu năng
+Raw Pointer (unsigned char*)	
+- Giống hệt, không overhead đáng kể
+Smart Pointer (std::unique_ptr<unsigned char[]>)	
+- Giống hệt (compiler tối ưu tương tự raw pointer)
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------

@@ -1,0 +1,30 @@
+khang@khang-virtual-machine:~/Desktop/Console-Image-Processing/RawPointers$ make all
+g++ -g -Wall -Wextra -I./Image App/main.cpp Image/Image.cpp -o image_processing
+khang@khang-virtual-machine:~/Desktop/Console-Image-Processing/RawPointers$ valgrind --leak-check=full --show-leak-kinds=all ./image_processing
+==9082== Memcheck, a memory error detector
+==9082== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==9082== Using Valgrind-3.15.0 and LibVEX; rerun with -h for copyright info
+==9082== Command: ./image_processing
+==9082== 
+Pixel (0, 0) of Image 1: (R: 0, G: 128, B: 255)
+Copy Constructor called!
+Pixel (1, 1) of Image 2 after set new color: (R: 255, G: 0, B: 0)
+Pixel (1, 1) of Image 1: (R: 0, G: 128, B: 255)
+Copy Assignment called!
+Pixel (0, 1) of Image 3 after invert: (R: 255, G: 127, B: 0)
+Pixel (0, 1) of Image 1: (R: 0, G: 128, B: 255)
+Move Assignment called!
+Pixel (0, 0) of Image 4 after move assignment: (R: 0, G: 128, B: 255)
+Move Constructor called!
+Pixel (0, 0) of Image 5 after moveconstructor: (R: 0, G: 128, B: 255)
+Pixel(0, 0) of Image 5 after grayscale: (R: 104, G: 104, B: 104)
+==9082== 
+==9082== HEAP SUMMARY:
+==9082==     in use at exit: 0 bytes in 0 blocks
+==9082==   total heap usage: 5 allocs, 5 frees, 73,764 bytes allocated
+==9082== 
+==9082== All heap blocks were freed -- no leaks are possible
+==9082== 
+==9082== For lists of detected and suppressed errors, rerun with: -s
+==9082== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
